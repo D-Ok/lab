@@ -41,7 +41,7 @@ let _makeHtml = ({
        $product.append($(`<span class="product-price">`).text(price));
    }
     let $prodButton= $(`<button name="${id}" class="prod-btn">`);
-   $product.append($(`<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalLong"
+   $product.append($(`<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter"
    data-button-id-descr="${id}" onclick="viewProduct(this.getAttribute('data-button-id-descr'));">`))
     $prodButton.append($(`<img src="images/shop_black.png" alt="button" class="img-prod-btn" data-button-id="${id}" 
                 onclick="addToCart(this.getAttribute('data-button-id'));">`))

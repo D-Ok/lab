@@ -44,6 +44,16 @@ header {
 .img-prod-btn {
   width: 100%; }
 
+#seaProduct {
+  position: fixed;
+  width: 50%;
+  left: 25%;
+  top: 25%;
+  background-color: white; }
+
+.product-image-view {
+  width: 25%; }
+
 /*!
  * Bootstrap v4.1.3 (https://getbootstrap.com/)
  * Copyright 2011-2018 The Bootstrap Authors

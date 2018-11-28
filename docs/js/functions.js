@@ -207,7 +207,7 @@ let _makeHtmlForView=({ id,
                            special_price,
                        }) => {
     let $product = $(`<div class="productInCart" data-product-id="${id}" id="${id}-productInCart">`);
-    $product.append($(`<img src="${image_url}" alt="${name}" class="img-fluid product-image align-self-center">`));
+    $product.append($(`<img src="${image_url}" alt="${name}" class="img-fluid product-image-view align-self-center">`));
     $product.append($(`<span class="product-title card-text">`).text(name));
     $product.append($(`<div class="descriptionOfProduct">`).text(description));
     if(special_price!=null){
@@ -216,24 +216,29 @@ let _makeHtmlForView=({ id,
     } else {
         $product.append($(`<span class="product-price">`).text(price));
     }
+    $product.append($(`<button class="close-view" onclick="closeViev();">`).text("Close"))
     return $product;
 };
 function viewProduct(productId) {
+
     jQuery.ajax({
         url: 'https://nit.tron.net.ua/api/product/'+productId,
         method: 'get',
         dataType: 'json',
         success: function(json){
             console.table(json);
-            let getDiv=jQuery('.modal-body');
+            let getDiv=jQuery('#seaProduct');
             getDiv.empty();
-           // get
-            //json.forEach(product =>
             getDiv.append(_makeHtmlForView(json));
+            getDiv.removeAttr('hidden');
         },
         error: function(xhr){
             alert("An error occured: " + xhr.status + " " + xhr.statusText);
         },
     });
+}
+function closeViev() {
+  //  jQuery('#seaProduct').setAttribute('hidden', 'true');
+    jQuery('#seaProduct').attr('hidden', 'true');
 }
 
