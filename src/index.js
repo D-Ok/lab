@@ -9,20 +9,6 @@ import $ from 'jquery';
 window.jQuery = $;
 window.$ = $;
 
-class Product {
-    constructor(id, name, image_url, description, price, special_price){
-        this.id=id;
-        this.name=name;
-        this.image_url=image_url;
-        this.description=description;
-        this.price=price;
-        this.special_price=special_price;
-    }
-    toString(){
-     return ""+this.name;
-    }
-}
-let allProducts=[];
 let _makeHtml = ({
                      id,
                      name,
@@ -40,14 +26,12 @@ let _makeHtml = ({
     } else {
        $product.append($(`<span class="product-price">`).text(price));
    }
-    let $prodButton= $(`<button name="${id}" class="prod-btn">`);
-   $product.append($(`<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter"
-   data-button-id-descr="${id}" onclick="viewProduct(this.getAttribute('data-button-id-descr'));">`))
-    $prodButton.append($(`<img src="images/shop_black.png" alt="button" class="img-prod-btn" data-button-id="${id}" 
-                onclick="addToCart(this.getAttribute('data-button-id'));">`))
+    $product.append($(`<button class="prod-btn-discr"
+     data-button-id-descr="${id}" onclick="viewProduct(this.getAttribute('data-button-id-descr'));">`).text('Detail information'));
+    let $prodButton= $(`<button name="${id}"  data-button-id="${id}" class="prod-btn" 
+                        onclick="addProductTo(this.getAttribute('data-button-id'), null);">`);
+    $prodButton.append($(`<img src="images/shop_black.png" alt="button" class="img-prod-btn">`));
     $product.append($prodButton);
-  // let newProd=new Product(id,name, image_url, description, price, special_price);
-  // allProducts.push(newProd);
     return $product;
 };
 
@@ -64,29 +48,33 @@ let _makeHtmlCategory=({
     $category.append($(`<div id="${id}-description-category" hidden="true">`).text(description));
     return $category;
 }
-function displayDescription(){
-  console.log('found1');
-}
 
-function displayDescriptions(id){
-    let hoveredCat=$.getElementById(id+"-category");
-    jQuery.ajax({
-        url: 'https://nit.tron.net.ua/api/product/list/category/'+id,
-        method: 'get',
-        dataType: 'json',
-        success: function(json){
-            hoveredCat.append(`<div class="category-description">`).text(json.description);
-            console.log('hovered '+hoveredCat.getAttribute(data-category-id));
-        },
-        error: function(xhr){
-            alert("An error occured: " + xhr.status + " " + xhr.statusText);
-        },
-    });
-}
-
-function hideDescription(cat){
-
-}
+let _makeHtmlForProdInCart=({ id,
+                                name,
+                                image_url,
+                                description,
+                                price,
+                                special_price,
+                            }) => {
+    let $mainP=$(`<li>`);
+    let $product = $(`<div class="productInCart" hidden="true" data-product-id="${id}" id="${id}-productInCart">`);
+    $product.append($(`<img src="${image_url}" alt="${name}" class="img-fluid product-image-cart align-self-center">`));
+    $product.append($(`<span class="product-title-cart card-text">`).text(name));
+    if(special_price!=null){
+        $product.append($(`<span class="wrong-price-cart">`).text(price));
+        $product.append($(`<span class="product-special-prise-cart">`).text(special_price));
+    } else {
+        $product.append($(`<span class="product-price">`).text(price));
+    }
+    let q=0;
+    $product.append($(`<button name="${id}" class="lessBtn" id="${id}-lessBtn" 
+     onclick="minusProductTo(this.getAttribute('name'), document.getElementById('${id}-quantityOfProduct').getAttribute('value'));"> `).text('<'));
+    $product.append($(`<span class="quantity" id="${id}-quantityOfProduct" value="${q}" > `).text(q));
+    $product.append($(`<button name="${id}" class="moreBtn" 
+    onclick="addProductTo(this.getAttribute('name'),  document.getElementById('${id}-quantityOfProduct').getAttribute('value'));">`).text('>'));
+    $mainP.append($product);
+    return $mainP;
+};
 jQuery.ajax({
     url: 'https://nit.tron.net.ua/api/category/list',
     method: 'get',
@@ -96,6 +84,7 @@ jQuery.ajax({
         // console.log(json);
         console.table(json);
         json.forEach(category => $('.category-list').append(_makeHtmlCategory(category)));
+
         console.log('Added to grid');
     },
     error: function(xhr){
@@ -114,6 +103,8 @@ jQuery.ajax({
         // console.log(json);
         console.table(json);
         json.forEach(product => $('.product-grid').append(_makeHtml(product)));
+        let getDiv=jQuery('#choosen-products');
+        json.forEach(product => getDiv.append(_makeHtmlForProdInCart(product)));
         console.log('Added to grid');
     },
     error: function(xhr){

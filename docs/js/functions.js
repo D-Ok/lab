@@ -12,21 +12,10 @@ function go(str) {
 
     c.setAttribute('hidden', 'true');
     c.classList.remove("active");
-   // lo.setAttribute('hidden', 'true');
-   // lo.classList.remove("active");
     element.removeAttribute('hidden');
     element.classList.add("active");
 }
 
-let _makeHtmlCategoryDesc=({
-                               id,
-                               name,
-                               description,
-                           }) => {
-    let $info= $(`<span class="category-description">`);
-    $info.text(description);
-    return $info;
-};
 
 let _makeHtml = ({
                      id,
@@ -45,8 +34,11 @@ let _makeHtml = ({
     } else {
         $product.append($(`<span class="product-price">`).text(price));
     }
-    let $prodButton= $(`<button name="${id}" class="prod-btn">`);
-    $prodButton.append($(`<img src="images/shop_black.png" alt="button" class="img-prod-btn">`))
+    $product.append($(`<button class="prod-btn-discr"
+     data-button-id-descr="${id}" onclick="viewProduct(this.getAttribute('data-button-id-descr'));">`).text('Detail information'));
+    let $prodButton= $(`<button name="${id}"  data-button-id="${id}" class="prod-btn" 
+                        onclick="addProductTo(this.getAttribute('data-button-id'), null);">`);
+    $prodButton.append($(`<img src="images/shop_black.png" alt="button" class="img-prod-btn">`));
     $product.append($prodButton);
     return $product;
 };
@@ -75,23 +67,6 @@ function displayDescription(id){
     let name=id+"-description-category";
     let hoveredCat=document.getElementById(name);
     hoveredCat.removeAttribute('hidden');
-   /* console.log(name);
-    jQuery.ajax({
-        url: 'https://nit.tron.net.ua/api/category/'+id,
-        method: 'get',
-        dataType: 'json',
-        success: function(json){
-            console.log(json.description);
-            let d=JSON.stringify(json.description);
-            console.log(d);
-            //json.forEach(pr => hoveredCat.append(_makeHtmlCategoryDesc(pr)));
-            hoveredCat.append($(`<div class="category-description">`).text(d.toString()));
-            //console.log('hovered '+hoveredCat.getAttribute('data-category-id'));
-        },
-        error: function(xhr){
-            alert("An error occured: " + xhr.status + " " + xhr.statusText);
-        },
-    });*/
 }
 
 
@@ -132,7 +107,7 @@ function addToCart(id) {
     }
 }
 
-let _makeHtmlForProdInCart=({ id,
+/*let _makeHtmlForProdInCart=({ id,
                                name,
                                image_url,
                                description,
@@ -149,7 +124,7 @@ let _makeHtmlForProdInCart=({ id,
     } else {
         $product.append($(`<span class="product-price">`).text(price));
     }
-    let q=1;
+    let q=0;
     let prod;
     for(let i=0; i<productsInCart.length; i++){
         if(productsInCart[i].id==id){
@@ -163,24 +138,40 @@ let _makeHtmlForProdInCart=({ id,
     $product.append($(`<button name="${id}" class="moreBtn" onclick="addProductTo(this.getAttribute('name'), (q+1));">`).text('>'));
     $mainP.append($product);
     return $mainP;
-};
-
-function addProductTo(productId, quantity) {
+};*/
+function minusProductTo(productId, quantity){
     let name=productId+"-productInCart";
     let element=document.getElementById(name);
-    if(quantity==0) {
-        element.addClass("unuseful");
+     quantity= document.getElementById(productId+'-quantityOfProduct').getAttribute('value');
+    if(quantity<=1) {
+        quantity=0;
+        element.setAttribute('hidden', 'true');
+        element=document.getElementById(productId+'-quantityOfProduct');
+        element.setAttribute('value', quantity);
     }
     else {
+        quantity--;
         name=productId+"-quantityOfProduct";
-        element=document.getElementById(name);
-        if(element!=null) {
-            element.empty();
-            element.text(quantity);
-        }
+        element=$('#'+name);
+        element.empty();
+        element.text(quantity);
+        element.attr('value', quantity);
+
     }
 }
-
+function addProductTo(productId, quantity) {
+    if(quantity==null) quantity= document.getElementById(productId+'-quantityOfProduct').getAttribute('value');
+    if(quantity==null || quantity<0) quantity=0;
+    quantity++;
+    let name=productId+"-quantityOfProduct";
+    let element=$('#'+name);
+    element.empty();
+    element.text(quantity);
+    element.removeAttr('value');
+    element.attr('value', quantity);
+    $('#'+productId+'-productInCart').removeAttr('hidden');
+}
+/*
 function getProduct(productId) {
     jQuery.ajax({
         url: 'https://nit.tron.net.ua/api/product/'+productId,
@@ -191,13 +182,13 @@ function getProduct(productId) {
             let getDiv=jQuery('#choosen-products');
             //getDiv.empty();
             //json.forEach(product =>
-                getDiv.append(_makeHtmlForProdInCart(json));
+            getDiv.append(_makeHtmlForProdInCart(json));
         },
         error: function(xhr){
             alert("An error occured: " + xhr.status + " " + xhr.statusText);
         },
     });
-}
+}*/
 
 let _makeHtmlForView=({ id,
                            name,
