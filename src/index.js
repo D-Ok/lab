@@ -133,25 +133,200 @@ jQuery.ajax({
     },
 });
 
+$(document).ready(function () {
+    main();
+    $('.categoryAll').on('click',function () {
+        let getDiv = jQuery('.product-grid');
+        getDiv.empty();
+        main();
+    });
+    function main() {
+        jQuery.ajax({
+            url: 'https://nit.tron.net.ua/api/product/list',
+            method: 'get',
+            dataType: 'json',
+            success: function (json) {
+                console.log('Loaded via AJAX!');
+                // console.log(json);
+                console.table(json);
+                json.forEach(product => $('.product-grid').append(_makeHtml(product)));
+                let getDiv = jQuery('#choosen-products');
+                json.forEach(product => getDiv.append(_makeHtmlForProdInCart(product)));
+
+                //addition product to the cart
+                $('.moreBtn').on('click', function () {
+                    $('.send').removeAttr('disabled');
+                    let productId = $(this).attr('name');
+                    let quantity = $('#' + productId + '-quantityOfProduct').attr('data-value');
+                    if (quantity == null || quantity < 0) quantity = 0;
+                    quantity++;
+                    let name = productId + "-quantityOfProduct";
+                    let element = $('#' + name);
+                    element.empty();
+                    element.text(quantity);
+                    element.removeAttr('data-value');
+                    element.attr('data-value', quantity);
+                    $('#' + productId + '-productInCart').removeAttr('hidden');
+                });
+
+                //delete products from the cart
+                $('.lessBtn').on('click', function () {
+                    let productId = $(this).attr('name');
+                    let name = productId + "-productInCart";
+                    let quantity = $('#' + productId + '-quantityOfProduct').attr('data-value');
+                    let element = $('#' + name);
+                    if (quantity <= 1) {
+                        quantity = 0;
+                        let allP = 0;
+                        $('#choosen-products li').each(function () {
+                            let thisVal = $('#' + productId + '-quantityOfProduct');
+                            let q = $(thisVal).attr('data-value');
+                            if (q != null && q > 0) {
+                                allP++;
+                            }
+                        });
+                        if (allP == 0) $('.send').attr('disabled', 'true');
+                        element.attr('hidden', 'true');
+                        element = $('#' + productId + '-quantityOfProduct');
+                        element.attr('data-value', quantity);
+                    }
+                    else {
+                        quantity--;
+                        name = productId + "-quantityOfProduct";
+                        element = $('#' + name);
+                        element.empty();
+                        element.text(quantity);
+                        element.attr('data-value', quantity);
+
+                    }
+                });
 
 
-jQuery.ajax({
-    url: 'https://nit.tron.net.ua/api/product/list',
-    method: 'get',
-    dataType: 'json',
-    success: function(json){
-        console.log('Loaded via AJAX!');
-        // console.log(json);
-        console.table(json);
-        json.forEach(product => $('.product-grid').append(_makeHtml(product)));
-        let getDiv=jQuery('#choosen-products');
-        json.forEach(product => getDiv.append(_makeHtmlForProdInCart(product)));
-        console.log('Added to grid');
-    },
-    error: function(xhr){
-        alert("An error occured: " + xhr.status + " " + xhr.statusText);
-    },
-});
+                //addition products to the cart
+                $('.prod-btn').on('click', function () {
+                    $('.send').removeAttr('disabled');
+                    let productId = $(this).attr('data-button-id');
+                    let quantity = $('#' + productId + '-quantityOfProduct').attr('data-value');
+                    if (quantity == null || quantity < 0) quantity = 0;
+                    quantity++;
+                    let name = productId + "-quantityOfProduct";
+                    let element = $('#' + name);
+                    element.empty();
+                    element.text(quantity);
+                    element.removeAttr('data-value');
+                    element.attr('data-value', quantity);
+                    $('#' + productId + '-productInCart').removeAttr('hidden');
+                });
+
+                //display products of choosen category
+                $('.category').on('click', function () {
+                    let id = this.getAttribute('data-category-id');
+                    let name = id + "-category";
+                    console.log(name);
+                    //let hoveredCat = document.getElementById(name);
+                    jQuery.ajax({
+                        url: 'https://nit.tron.net.ua/api/product/list/category/' + id,
+                        method: 'get',
+                        dataType: 'json',
+                        success: function (json) {
+                            console.table(json);
+                            let getDiv = jQuery('.product-grid');
+                            getDiv.empty();
+                            json.forEach(product => getDiv.append(_makeHtml(product)));
+
+                            //addition products to the cart
+                            $('.prod-btn').on('click', function () {
+                                $('.send').removeAttr('disabled');
+                                let productId = $(this).attr('data-button-id');
+                                let quantity = $('#' + productId + '-quantityOfProduct').attr('data-value');
+                                if (quantity == null || quantity < 0) quantity = 0;
+                                quantity++;
+                                let name = productId + "-quantityOfProduct";
+                                let element = $('#' + name);
+                                element.empty();
+                                element.text(quantity);
+                                element.removeAttr('data-value');
+                                element.attr('data-value', quantity);
+                                $('#' + productId + '-productInCart').removeAttr('hidden');
+                            });
+
+
+                            $('.prod-btn-discr').on('click', function () {
+                                let productId = $(this).attr('data-button-id-descr');
+                                jQuery.ajax({
+                                    url: 'https://nit.tron.net.ua/api/product/' + productId,
+                                    method: 'get',
+                                    dataType: 'json',
+                                    success: function (json) {
+                                        console.table(json);
+                                        let getDiv = jQuery('#seaProduct');
+                                        getDiv.empty();
+                                        getDiv.append(_makeHtmlForView(json));
+                                        $('.close-view').on('click', function () {
+                                            console.log('close');
+                                            $('#seaProduct').attr("hidden", "true");
+                                        });
+                                        getDiv.removeAttr('hidden');
+                                    },
+                                    error: function (xhr) {
+                                        alert("An error occured: " + xhr.status + " " + xhr.statusText);
+                                    },
+                                });
+                            });
+                        },
+                        error: function (xhr) {
+                            alert("An error occured: " + xhr.status + " " + xhr.statusText);
+                        },
+                    });
+                });
+                //hover category
+                $('.category').on('mouseover', function () {
+                    let id = this.getAttribute('data-category-id');
+                    console.log('found2');
+                    let name = id + "-description-category";
+                    let hoveredCat = document.getElementById(name);
+                    hoveredCat.removeAttribute('hidden');
+                });
+                //mouseleave category
+                $('.category').on('mouseleave', function () {
+                    let id = this.getAttribute('data-category-id');
+                    let name = id + "-description-category";
+                    let hoveredCat = document.getElementById(name);
+                    hoveredCat.setAttribute('hidden', 'true');
+                });
+
+
+                $('.prod-btn-discr').on('click', function () {
+                    let productId = $(this).attr('data-button-id-descr');
+                    jQuery.ajax({
+                        url: 'https://nit.tron.net.ua/api/product/' + productId,
+                        method: 'get',
+                        dataType: 'json',
+                        success: function (json) {
+                            console.table(json);
+                            let getDiv = jQuery('#seaProduct');
+                            getDiv.empty();
+                            getDiv.append(_makeHtmlForView(json));
+                            $('.close-view').on('click', function () {
+                                console.log('close');
+                                $('#seaProduct').attr("hidden", "true");
+                            });
+                            getDiv.removeAttr('hidden');
+                        },
+                        error: function (xhr) {
+                            alert("An error occured: " + xhr.status + " " + xhr.statusText);
+                        },
+                    });
+                });
+
+
+                console.log('Added to grid');
+            },
+            error: function (xhr) {
+                alert("An error occured: " + xhr.status + " " + xhr.statusText);
+            },
+        });
+}});
 /*
 jQuery.ajax({
     url: 'https://nit.tron.net.ua/api/product/list',
@@ -200,130 +375,6 @@ $(document).ready(function (){
         //c.classList.remove("active");
         element.removeAttr('hidden');
     });
-    //display products of choosen category
-    $('.category').on('click',  function () {
-        let id=this.getAttribute('data-category-id');
-        let name = id + "-category";
-        console.log(name);
-        //let hoveredCat = document.getElementById(name);
-        jQuery.ajax({
-            url: 'https://nit.tron.net.ua/api/product/list/category/' + id,
-            method: 'get',
-            dataType: 'json',
-            success: function (json) {
-                console.table(json);
-                let getDiv = jQuery('.product-grid');
-                getDiv.empty();
-                json.forEach(product => getDiv.append(_makeHtml(product)));
-            },
-            error: function (xhr) {
-                alert("An error occured: " + xhr.status + " " + xhr.statusText);
-            },
-        });
-    });
-    //hover category
-    $('.category').on('mouseover',  function () {
-        let id=this.getAttribute('data-category-id');
-        console.log('found2');
-        let name=id+"-description-category";
-        let hoveredCat=document.getElementById(name);
-        hoveredCat.removeAttribute('hidden');
-    });
-  //mouseleave category
-    $('.category').on('mouseleave',  function () {
-        let id=this.getAttribute('data-category-id');
-        let name=id+"-description-category";
-        let hoveredCat=document.getElementById(name);
-        hoveredCat.setAttribute('hidden', 'true');
-    });
-    //addition products to the cart
-    $('.prod-btn').on('click', function () {
-        $('.send').removeAttr('disabled');
-        let productId=$(this).attr('data-button-id');
-        let quantity= $('#'+productId+'-quantityOfProduct').attr('data-value');
-        if(quantity==null || quantity<0) quantity=0;
-        quantity++;
-        let name=productId+"-quantityOfProduct";
-        let element=$('#'+name);
-        element.empty();
-        element.text(quantity);
-        element.removeAttr('data-value');
-        element.attr('data-value', quantity);
-        $('#'+productId+'-productInCart').removeAttr('hidden');
-    });
-
-    //addition product to the cart
-    $('.moreBtn').on('click', function () {
-        $('.send').removeAttr('disabled');
-        let productId=$(this).attr('name');
-        let quantity= $('#'+productId+'-quantityOfProduct').attr('data-value');
-        if(quantity==null || quantity<0) quantity=0;
-        quantity++;
-        let name=productId+"-quantityOfProduct";
-        let element=$('#'+name);
-        element.empty();
-        element.text(quantity);
-        element.removeAttr('data-value');
-        element.attr('data-value', quantity);
-        $('#'+productId+'-productInCart').removeAttr('hidden');
-    });
-
-    //delete products from the cart
-    $('.lessBtn').on('click', function () {
-        let productId=$(this).attr('name');
-        let name=productId+"-productInCart";
-        let quantity= $('#'+productId+'-quantityOfProduct').attr('data-value');
-        let element=$('#'+name);
-        if(quantity<=1) {
-            quantity=0;
-            let allP=0;
-            $('#choosen-products li').each(function(){
-                let thisVal=$('#'+productId+'-quantityOfProduct');
-                let q=$(thisVal).attr('data-value');
-                if(q!=null && q>0){
-                    allP++;
-                }
-            });
-            if(allP==0) $('.send').attr('disabled', 'true');
-            element.attr('hidden', 'true');
-            element=$('#'+productId+'-quantityOfProduct');
-            element.attr('data-value', quantity);
-        }
-        else {
-            quantity--;
-            name=productId+"-quantityOfProduct";
-            element=$('#'+name);
-            element.empty();
-            element.text(quantity);
-            element.attr('data-value', quantity);
-
-        }
-    });
-
-
-    $('.prod-btn-discr').on('click', function () {
-        let productId=$(this).attr('data-button-id-descr');
-        jQuery.ajax({
-            url: 'https://nit.tron.net.ua/api/product/'+productId,
-            method: 'get',
-            dataType: 'json',
-            success: function(json){
-                console.table(json);
-                let getDiv=jQuery('#seaProduct');
-                getDiv.empty();
-                getDiv.append(_makeHtmlForView(json));
-                $('.close-view').on('click', function(){
-                    console.log('close');
-                    $('#seaProduct').attr("hidden", "true");
-                });
-                getDiv.removeAttr('hidden');
-            },
-            error: function(xhr){
-                alert("An error occured: " + xhr.status + " " + xhr.statusText);
-            },
-        });
-    });
-
 
     $('#sendPost').on('click',function () {
         let arrProd=[];
