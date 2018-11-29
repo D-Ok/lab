@@ -16,9 +16,9 @@
       </button>
       <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
         <div class="navbar-nav">
-          <a class="nav-item nav-link active" href="#all-content" onclick="go('all-content');">Main <span class="sr-only">(current)</span></a>
-          <a class="nav-item nav-link" href="#about" onclick="go('about');">About</a>
-          <a class="nav-item nav-link" href="#cart" onclick="go('cart');">Cart</a>
+          <a class="nav-item nav-link active" href="#all-content" >Main <span class="sr-only">(current)</span></a>
+          <a class="nav-item nav-link" href="#about" >About</a>
+          <a class="nav-item nav-link" href="#cart" >Cart</a>
         </div>
       </div>
     </nav>
@@ -43,6 +43,19 @@
 
        </ul>
     <button class="send">Відправити замовлення</button>
+    <div id="formToSend" hidden="true">
+      <form class="addPerson"accept-charset="utf-8">
+        <fieldset>
+          <input type="button" id="closeForm" value="Close">
+          Ім'я:  <input type="text" id="userName"><br>
+          e-mail:  <input type="email" id="userE-mail"><br>
+          Номер телефону:  <input type="number" id="userNumber"><br>
+          <p id="smthWrong"></p>
+          <input type="button" id="sendPost" value="Замовити продукти">
+          <p id="done"></p>
+        </fieldset>
+      </form>
+    </div>
   </div>
     <div id="seaProduct" hidden="true">
 

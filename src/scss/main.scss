@@ -15,7 +15,7 @@ header{
   margin-top: 60px;
 }
 .product{
-  height: 450px;
+  height: 500px;
   text-align: center;
   position: relative;
 }
@@ -51,23 +51,25 @@ header{
 }
 #seaProduct{
   position: fixed;
-  width: 50%;
+  width: 60%;
+  height: 60%;
   left: 25%;
   top: 25%;
+  border-style: solid;
+  border-color: black;
+  border-radius: 20px;
+  border-width: 2px;
   background-color: white;
+  overflow: auto;
 }
 .product-image-view{
   width: 25%;
+  float: left;
 }
 li{
   list-style-type: none;
 }
-.product-image-cart{
-  width: 25%;
-}
-.productInCart span {
-  margin: 5px;
-}
+
 .send{
   align-self: center;
   margin: 10px;
@@ -78,5 +80,83 @@ li{
   text-align: center;
 }
 .category{
+  color: #002752;
+}
+
+#formToSend{
+  padding: 10px;
+  background-color: white;
+  border-style: solid;
+  border-color: black;
+  border-radius: 20px;
+  border-width: 2px;
+  position: fixed;
+  top: 25%;
+  left: 40%;
+}
+#formToSend form {
+  padding-top: 40px;
+  position: relative;
+  color: black;
+}
+#formToSend form input{
+  padding: 5px;
+}
+#closeForm{
+  position: absolute;
+  right: 10px;
+  top: 0px;
+}
+/*.descriptionOfProductInCart{
+  width: 50%;
+  text-align: center;
+  padding: 10px;
+  color: black;
+}*/
+.productInCart{
+  width: 60%;
+  padding: 10px;
+  border-style: solid;
+  border-color: black;
+  border-radius: 20px;
+  border-width: 2px;
+  overflow: hidden;
+  color: black;
+  position: relative;
+}
+
+.product-image-cart{
+  width: 25%;
+  float:left
+}
+.productInCart span {
+  margin: 5px;
+}
+.li-cart{
+  text-align: center;
+  margin: 10px;
+}
+#choosen-products{
+  text-align: center;
+}
+
+.productInCart-view *{
+  margin: 5px;
+}
+.productInCart-view{
+  width: 100%;
+  padding: 10px;
+  overflow: auto;
+  color: black;
+  position: relative;
+  background-color: white;
+}
+
+.close-view{
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+}
+.descriptionOfProduct-view{
   color: #002752;
 }
